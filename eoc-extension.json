@@ -1,0 +1,15 @@
+{
+  "id": "eyes-on-media",
+  "name": "Eyes on Media",
+  "icon": "film",
+  "accent": "#a78bfa",
+  "entry": "server/server.js",
+  "port": 7778,
+  "autostart": true,
+  "repo": "https://github.com/dfadify-web/eyes-on-media",
+  "install": "npx -y github:dfadify-web/eyes-on-media",
+  "description": {
+    "en": "Watch the videos and voice-overs Claude generates with code, live: renders as they are written, edge-tts waveforms, spectrograms and subtitles.",
+    "es": "Mira en directo los vídeos y voces que Claude genera con código: renders mientras se escriben, ondas de edge-tts, espectrogramas y subtítulos."
+  }
+}

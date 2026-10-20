@@ -1,0 +1,43 @@
+{
+  "name": "eyes-on-media",
+  "version": "0.1.0",
+  "description": "Eyes on Claude extension: watch the videos and voice-overs Claude is generating with code, live, with waveforms, spectrograms and subtitles.",
+  "license": "MIT",
+  "author": "dfadify-web",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dfadify-web/eyes-on-media.git"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "eyes-on-claude",
+    "extension",
+    "video",
+    "audio",
+    "edge-tts",
+    "waveform",
+    "live"
+  ],
+  "bin": {
+    "eyes-on-media": "install.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node server/server.js",
+    "test": "node test/smoke.js",
+    "install-ext": "node install.js",
+    "uninstall-ext": "node install.js --uninstall"
+  },
+  "devDependencies": {
+    "motion": "11.11.17",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "vite": "5.4.11"
+  }
+}
