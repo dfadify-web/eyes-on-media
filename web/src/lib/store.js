@@ -26,7 +26,7 @@ export function useMedia() {
   useEffect(() => {
     let es, stop = false;
     const open = () => {
-      es = new EventSource('/api/events');
+      es = new EventSource('api/events');
       es.onmessage = (e) => dispatch(JSON.parse(e.data));
       es.onerror = () => { dispatch({ type: '__down' }); es.close(); if (!stop) setTimeout(open, 2000); };
     };
@@ -44,11 +44,11 @@ export function useNow(ms = 1000) {
 }
 
 export const api = {
-  reveal: (id) => fetch('/api/reveal', { method: 'POST', body: JSON.stringify({ id }) }),
-  forget: (id) => fetch('/api/forget', { method: 'POST', body: JSON.stringify({ id }) }),
-  addRoot: (dir) => fetch('/api/roots', { method: 'POST', body: JSON.stringify({ dir }) }).then((r) => r.json()),
-  removeRoot: (dir) => fetch(`/api/roots?dir=${encodeURIComponent(dir)}`, { method: 'DELETE' }),
+  reveal: (id) => fetch('api/reveal', { method: 'POST', body: JSON.stringify({ id }) }),
+  forget: (id) => fetch('api/forget', { method: 'POST', body: JSON.stringify({ id }) }),
+  addRoot: (dir) => fetch('api/roots', { method: 'POST', body: JSON.stringify({ dir }) }).then((r) => r.json()),
+  removeRoot: (dir) => fetch(`api/roots?dir=${encodeURIComponent(dir)}`, { method: 'DELETE' }),
 };
 
 // URL del archivo real; cambia con cada escritura para no quedarse con una versión vieja en caché
-export const fileUrl = (it, name) => `/file/${it.id}${name ? '/' + encodeURIComponent(name) : ''}?v=${Math.round(it.mtime)}-${it.size}`;
+export const fileUrl = (it, name) => `file/${it.id}${name ? '/' + encodeURIComponent(name) : ''}?v=${Math.round(it.mtime)}-${it.size}`;
