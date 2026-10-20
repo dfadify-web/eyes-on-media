@@ -5,12 +5,18 @@ export function audioCtx() {
   return ctx;
 }
 
+// Cola: como mucho 2 decodificaciones a la vez para no congelar la página con muchos archivos
 const cache = new Map(); // url -> Promise<AudioBuffer>
+let active = 0;
+const queue = [];
+const slot = () => new Promise((res) => { if (active < 2) { active++; res(); } else queue.push(res); });
+const release = () => { const next = queue.shift(); if (next) next(); else active--; };
 export function decode(url) {
   if (cache.has(url)) return cache.get(url);
-  const p = fetch(url)
+  const p = slot().then(() => fetch(url)
     .then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
-    .then((buf) => audioCtx().decodeAudioData(buf));
+    .then((buf) => audioCtx().decodeAudioData(buf))
+    .finally(release));
   cache.set(url, p);
   p.catch(() => cache.delete(url));
   if (cache.size > 40) cache.delete(cache.keys().next().value);

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useVisible } from '../../lib/visible';
 import CardShell, { MetaChips } from '../CardShell';
 import WritingMeter from '../WritingMeter';
 import Waveform from '../Waveform';
@@ -50,13 +51,15 @@ export function VideoPlayer({ item, autoplay, big = false, onEl }) {
 function VideoAudio({ item, src, player, big }) {
   const hasAudio = !!item.meta?.audio || (item.ext !== 'mp4' && item.ext !== 'mov');
   const tooBig = item.size > 120e6;
-  const { buffer, error, loading } = useDecoded(src, hasAudio && !tooBig);
+  const box = useRef(null);
+  const visible = useVisible(box);
+  const { buffer, error, loading } = useDecoded(src, hasAudio && !tooBig && (big || visible));
   const pk = usePeaks(buffer, big ? 1400 : 700);
   if (!hasAudio) return <div className="no-audio"><Icon name="mute" size={12} />{t('noAudioTrack')}</div>;
   if (tooBig) return null;
   const d = buffer?.duration || player.duration;
   return (
-    <div className="v-audio">
+    <div className="v-audio" ref={box}>
       <Waveform peaks={pk} progress={d ? player.time / d : 0} duration={d} onSeek={player.seek} height={big ? 70 : 38} />
       {loading && !pk && <span className="tiny muted">{t('decoding')}</span>}
       {error && !pk && <span className="tiny muted">{t('cantDecode')}</span>}

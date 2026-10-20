@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import { useVisible } from '../lib/visible';
 
 // Miniaturas reales del vídeo (se busca cada instante en un <video> oculto y se pinta en canvas)
 const memo = new Map();
 export default function Filmstrip({ src, duration, progress = 0, onSeek, count = 10, height = 40 }) {
   const [thumbs, setThumbs] = useState(memo.get(src) || []);
   const wrap = useRef(null);
+  const visible = useVisible(wrap);
   useEffect(() => {
     if (!src || !duration || memo.has(src)) { setThumbs(memo.get(src) || []); return; }
+    if (!visible) return;
     let dead = false;
     const v = document.createElement('video');
     v.muted = true; v.preload = 'auto'; v.src = src; v.crossOrigin = 'anonymous';
@@ -27,9 +30,9 @@ export default function Filmstrip({ src, duration, progress = 0, onSeek, count =
     v.onloadeddata = () => grab(0);
     v.onerror = () => {};
     return () => { dead = true; };
-  }, [src, duration, count]);
+  }, [src, duration, count, visible]);
 
-  if (!thumbs.length) return <div className="filmstrip empty" style={{ height }} />;
+  if (!thumbs.length) return <div className="filmstrip empty" ref={wrap} style={{ height }} />;
   return (
     <div className="filmstrip" ref={wrap} style={{ height }}
       onClick={(e) => { e.stopPropagation(); const r = wrap.current.getBoundingClientRect(); onSeek?.(((e.clientX - r.left) / r.width) * duration); }}>

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { useVisible } from '../../lib/visible';
 import CardShell, { MetaChips } from '../CardShell';
 import Waveform from '../Waveform';
 import LiveSpectrum from '../LiveSpectrum';
@@ -23,10 +24,10 @@ export function VoiceBadge({ tts }) {
   );
 }
 
-export function useAudioItem(item, n = 800) {
+export function useAudioItem(item, n = 800, enabled = true) {
   const src = fileUrl(item);
   const writing = item.status === 'writing';
-  const dec = useDecoded(src, true, writing);
+  const dec = useDecoded(src, enabled && item.size < 80e6, writing);
   const pk = usePeaks(dec.buffer, n);
   const cues = useMemo(() => parseSubs(item.subs?.text), [item.subs?.text]);
   return { src, writing, ...dec, peaks: pk, cues };
@@ -35,12 +36,14 @@ export function useAudioItem(item, n = 800) {
 export default function AudioCard({ item, home, job, onTheater, flash }) {
   const [el, setEl] = useState(null);
   const p = usePlayer(el);
-  const a = useAudioItem(item);
+  const box = useRef(null);
+  const visible = useVisible(box);
+  const a = useAudioItem(item, 800, visible);
   const dur = p.duration || a.buffer?.duration || item.meta?.duration || 0;
   return (
     <CardShell item={item} home={home} job={job} onTheater={onTheater} flash={flash}>
       <audio ref={setEl} src={a.src} preload="metadata" />
-      <div className="voice-hero">
+      <div className="voice-hero" ref={box}>
         <div className="orb-wrap">
           <LiveSpectrum el={el} playing={p.playing} mode="orb" size={112} bars={56} />
           <button className={`orb-play ${p.playing ? 'on' : ''}`} onClick={p.toggle} disabled={a.writing && !a.buffer} aria-label="play">
